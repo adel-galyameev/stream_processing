@@ -41,3 +41,15 @@
 Асинхронный вариант не требуется — read-only запрос возвращается без длительных операций.
 
 ![получить_список_нотификаций](./http/получить_список_нотификаций.png)
+
+---
+
+## OpenAPI спецификации (IDL)
+
+Интерактивный просмотр через [Swagger Editor](https://editor.swagger.io):
+
+| Спецификация | Описание |
+|---|---|
+| [`billing.yaml`](https://editor.swagger.io/?url=https://raw.githubusercontent.com/adel-galyameev/stream_processing/main/openApi/billing.yaml) | Billing API — создание пользователя, пополнение счёта, проверка баланса, списание средств |
+| [`order.yaml`](https://editor.swagger.io/?url=https://raw.githubusercontent.com/adel-galyameev/stream_processing/main/openApi/order.yaml) | Order API — создание заказа |
+| [`notification.yaml`](https://editor.swagger.io/?url=https://raw.githubusercontent.com/adel-galyameev/stream_processing/main/openApi/notification.yaml) | Notification API — создание профиля нотификации, получение списка уведомлений |

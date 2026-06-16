@@ -1,0 +1,185 @@
+openapi: '3.0.0'
+info:
+  title: billing API
+  version: '1.0.0'
+  description: |
+    описание REST API сервиса billing
+  contact: 
+    name: 'Галямеев Адель'
+    email: 'adelbabai37@gmail.com'
+servers: 
+  - uri: 'http://arch.homework'
+    description: 'arch.homework'
+paths: 
+  /billing/user:
+    post:
+      summary: 'Создание пользователя'
+      requestBody: 
+        content: 
+          application/json: 
+            schema: 
+              $ref: '#/components/schemas/UserRq'
+        required: true
+      responses: 
+        '201':
+          description: 'OK'
+          content: 
+            application/json: 
+              schema: 
+                $ref: '#/components/schemas/UserRs'
+        '500':
+          description: 'внутренняя ошибка сервиса'
+  /billing/user/{user_id}/account:
+    post:
+      summary: 'Пополнение счета пользователя'
+      parameters: 
+        - in: path
+          name: user_id
+          schema: 
+            type: string
+          required: true
+          example: 'f42863b4-19c2-4597-ab68-a355ab8bb41c'
+      requestBody:
+        content: 
+          application/json: 
+            schema: 
+              $ref: '#/components/schemas/AccountRq'
+      responses: 
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/AccountRs'
+        '400':
+          description: 'Bad request'
+        '500':
+          description: 'внутренняя ошибка сервиса'
+    get:
+      summary: 'Проверить баланс'
+      parameters:
+        - in: path
+          name: user_id
+          schema:
+            type: string
+          required: true
+          example: 'f42863b4-19c2-4597-ab68-a355ab8bb41c'
+      responses:
+        '200':
+          description: 'OK'
+          content: 
+            application/json: 
+              schema: 
+                $ref: '#/components/schemas/AccountBalanceRq'
+                
+  /billing/user/{user_id}/withdrawals:
+    post:
+      summary: 'Списание с счета пользователя'
+      parameters:
+        - in: path
+          name: user_id
+          schema:
+            type: string
+          required: true
+          example: 'f42863b4-19c2-4597-ab68-a355ab8bb41c'
+      requestBody:
+        content: 
+          application/json: 
+            schema: 
+              $ref: '#/components/schemas/AccountRq'
+      responses: 
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/AccountRs'
+        '422':
+          description: 'Недостаточно средств'
+        '500':
+          description: 'внутренняя ошибка сервиса'
+          
+components: 
+  schemas: 
+    UserRq:
+      type: object
+      required: 
+        - userName
+        - email
+        - phone
+      properties: 
+        userName: 
+          type: string
+          example: 'Tom'
+          description: 'Имя'
+        email:
+          type: string
+          example: 'Tom@test.ru'
+          description: 'электронная почта'
+        phone:
+          type: string
+          example: '+79507770377'
+          description: 'номер телефона'
+    UserRs:
+      type: object
+      required: 
+        - id
+        - userName
+        - email
+        - phone
+      properties:
+        id:
+          type: string
+          example: 'f42863b4-19c2-4597-ab68-a355ab8bb41c'
+          description: 'уникальный иденцификатор пользователя'
+        userName: 
+          type: string
+          example: 'Tom'
+          description: 'Имя'
+        email:
+          type: string
+          format: email
+          example: 'Tom@test.ru'
+          description: 'электронная почта'
+        phone:
+          type: string
+          example: '+79507770377'
+          description: 'номер телефона'
+    AccountRq:
+      type: object
+      required: 
+        - sum
+      properties: 
+        sum:
+          type: integer
+          example: 1000
+          description: 'Сумма'   
+    AccountRs:
+      type: object
+      required: 
+        - sum
+        - totalSum
+        - date
+      properties: 
+        sum:
+          type: integer
+          example: 1000
+          description: 'Сумма пополнения баланса'    
+        totalSum:
+          type: integer
+          example: 100000
+          description: 'Общая сумма на балансе'
+        date:
+          type: string
+          format: date-time
+          example: '2026-06-16T14:30:00Z'
+          description: 'дата и время пополнения баланса'   
+    AccountBalanceRq:
+      type: object
+      required: 
+        - balance
+      properties: 
+        balance:
+          type: integer
+          example: 1000
+          description: 'баланс счета'   

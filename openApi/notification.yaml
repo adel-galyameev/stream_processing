@@ -1,0 +1,90 @@
+openapi: '3.0.0'
+info:
+  title: 'notification API'
+  version: '1.0.0'
+  description: 'Описание REST API сервиса notification'
+  contact:
+    name: 'Галямеев Адель'
+    email: 'adelbabai37@gmail.com'
+servers: 
+  - uri: 'http://arch.homework'
+    description: 'arch.homework'
+paths:
+  /notification/profile:
+    post:
+      summary: 'Создание профиля нотификации'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationProfileRq'
+      responses:
+        '201':
+         description: 'OK'
+        '500':
+         description: 'внутренняя ошибка сервиса'
+  /notification/{user_id}:
+    get:
+      summary: 'Получить список нотификаций'
+      parameters:
+        - in: path
+          name: user_id
+          schema:
+            type: string
+          required: true
+          example: 'f42863b4-19c2-4597-ab68-a355ab8bb41c'
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                 $ref: '#/components/schemas/NotificationRs'
+
+components:
+  schemas:
+    NotificationProfileRq:
+      type: object
+      required:
+       - userId
+       - userName
+       - email
+      properties:
+        userId:
+          type: string
+          example: 'f42863b4-19c2-4597-ab68-a355ab8bb41c'
+          description: 'уникальный иденцификатор пользователя'
+        userName:
+          type: string
+          example: 'Tom'
+          description: 'Имя'
+        email:
+          type: string
+          format: email
+          example: 'Tom@test.ru'
+          description: 'электронная почта'
+    NotificationRs:
+     type: object
+     required:
+      - message
+      - type
+      - status
+     properties:
+      message:
+        type: string
+        example: 'Заказ 123 оплачен!'
+        description: 'сообщение для пользователя'
+      type:
+        type: string
+        enum:
+          - INFO
+          - ERROR
+        description: 'тип сообщения'
+      status:
+        type: string
+        enum:
+          - SENT
+          - NOT_SENT
+        description: 'статус нотификации'

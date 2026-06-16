@@ -1,0 +1,76 @@
+openapi: '3.0.0'
+info:
+  title: 'order API'
+  version: '1.0.0'
+  description: 'Описание REST API сервиса billing'
+  contact:
+    name: 'Галямеев Адель'
+    email: 'adelbabai37@gmail.com'
+servers: 
+  - uri: 'http://arch.homework'
+    description: 'arch.homework'
+paths:
+  /order/{user_id}:
+    post:
+      summary: 'Создание заказа'
+      parameters:
+        - in: path
+          name: user_id
+          schema:
+            type: string
+          required: true
+          example: 'f42863b4-19c2-4597-ab68-a355ab8bb41c'
+      requestBody:
+        content:
+          application/json:
+           schema:
+            $ref: '#/components/schemas/OrderRq'
+      responses:
+        '201':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderRs'
+        '422':
+          description: 'Недостаточно средств'
+        '500':
+          description: 'внутренняя ошибка сервиса'
+
+components:
+  schemas:
+    OrderRq:
+      type: object
+      required: 
+        - price
+        - product
+      properties: 
+        price: 
+          type: integer
+          example: 100
+          description: 'Стоимость продкута'
+        product:
+          type: string
+          example: 'Молоко'
+          description: 'Название продукта'
+    OrderRs:
+      type: object
+      required: 
+        - price
+        - product
+        - number
+      properties: 
+        price: 
+          type: integer
+          example: 100
+          description: 'Стоимость продкута'
+        product:
+          type: string
+          example: 'Молоко'
+          description: 'Название продукта'
+        number:
+          type: integer
+          example: 1
+          description: 'Номер заказа'
+
+
