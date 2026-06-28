@@ -110,8 +110,5 @@ release "orders-chart" uninstalled
 ### 3 запуск тестов постмана:
 
 ```bash
-newman run orders-api-test.postman_collection.json \
-  --env-var "baseUrl=http://arch.homework"  \
-  --reporters cli \
-  --verbose
+newman run orders-api-test.postman_collection.json   --env-var "baseUrl=http://arch.homework"    --reporters cli   --verbose --delay-request 500
 ```
