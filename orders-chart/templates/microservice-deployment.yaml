@@ -1,0 +1,44 @@
+{{- range $name, $svc := .Values.microservices }}
+{{- if $svc.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $svc.name }}-deployment
+  labels:
+    {{- include "microservice.labels" $svc | nindent 4 }}
+spec:
+  replicas: {{ $svc.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ $svc.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ $svc.name }}
+    spec:
+      containers:
+        - name: {{ $svc.name }}
+          image: "{{ $svc.image.repository }}:{{ $svc.image.tag }}"
+          imagePullPolicy: {{ $svc.image.pullPolicy }}
+          ports:
+            - containerPort: {{ $svc.containerPort }}
+          envFrom:
+            - configMapRef:
+                name: {{ $svc.name }}-config
+            - secretRef:
+                name: {{ $svc.name }}-secret
+          {{- with $svc.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $svc.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $svc.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+---
+{{- end }}
+{{- end }}

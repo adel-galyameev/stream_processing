@@ -1,0 +1,15 @@
+{{- if .Values.kafka.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.kafka.name }}-service
+  labels:
+    {{- include "kafka.labels" . | nindent 4 }}
+spec:
+  selector:
+    app: {{ .Values.kafka.name }}
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.kafka.containerPort }}
+      targetPort: {{ .Values.kafka.containerPort }}
+{{- end }}

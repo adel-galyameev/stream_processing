@@ -1,0 +1,15 @@
+{{- if .Values.zookeeper.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.zookeeper.name }}-service
+  labels:
+    {{- include "zookeeper.labels" . | nindent 4 }}
+spec:
+  selector:
+    app: {{ .Values.zookeeper.name }}
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.zookeeper.containerPort }}
+      targetPort: {{ .Values.zookeeper.containerPort }}
+{{- end }}

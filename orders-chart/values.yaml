@@ -1,0 +1,205 @@
+global:
+  domain: arch.homework
+
+microservices:
+  notification:
+    enabled: true
+    name: notification
+    replicaCount: 1
+    image:
+      repository: adelgalyameev/notification
+      pullPolicy: IfNotPresent
+      tag: 0.1
+    containerPort: 8080
+    servicePort: 80
+    livenessProbe:
+      httpGet:
+        path: /actuator/health/liveness
+        port: 8080
+      initialDelaySeconds: 60
+      periodSeconds: 5
+    readinessProbe:
+      httpGet:
+        path: /actuator/health/readiness
+        port: 8080
+      initialDelaySeconds: 30
+      failureThreshold: 30
+      periodSeconds: 5
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 250m
+        memory: 256Mi
+    config:
+      DB_HOST_PORT: postgresql-service.default.svc.cluster.local:5432
+      DB_USER: order
+      KAFKA_BOOTSTRAP_SERVERS: kafka-service.default.svc.cluster.local:9092
+      USER_CREATED_TOPIC: user-created
+      PAYMENT_STATUS_TOPIC: payment-status
+    secret:
+      DB_PASSWORD: cGFzc3dvcmQ=
+
+  order:
+    enabled: true
+    name: order
+    replicaCount: 1
+    image:
+      repository: adelgalyameev/order
+      pullPolicy: IfNotPresent
+      tag: 0.1
+    containerPort: 8080
+    servicePort: 80
+    livenessProbe:
+      httpGet:
+        path: /actuator/health/liveness
+        port: 8080
+      initialDelaySeconds: 60
+      periodSeconds: 5
+    readinessProbe:
+      httpGet:
+        path: /actuator/health/readiness
+        port: 8080
+      initialDelaySeconds: 30
+      failureThreshold: 30
+      periodSeconds: 5
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 250m
+        memory: 256Mi
+    config:
+      DB_HOST_PORT: postgresql-service.default.svc.cluster.local:5432
+      DB_USER: order
+      KAFKA_BOOTSTRAP_SERVERS: kafka-service.default.svc.cluster.local:9092
+      ORDER_CREATED_TOPIC: order-created
+      PAYMENT_STATUS_TOPIC: payment-status
+    secret:
+      DB_PASSWORD: cGFzc3dvcmQ=
+
+  billing:
+    enabled: true
+    name: billing
+    replicaCount: 1
+    image:
+      repository: adelgalyameev/billing
+      pullPolicy: IfNotPresent
+      tag: 0.1
+    containerPort: 8080
+    servicePort: 80
+    livenessProbe:
+      httpGet:
+        path: /actuator/health/liveness
+        port: 8080
+      initialDelaySeconds: 60
+      periodSeconds: 5
+    readinessProbe:
+      httpGet:
+        path: /actuator/health/readiness
+        port: 8080
+      initialDelaySeconds: 30
+      failureThreshold: 30
+      periodSeconds: 5
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 250m
+        memory: 256Mi
+    config:
+      DB_HOST_PORT: postgresql-service.default.svc.cluster.local:5432
+      DB_USER: order
+      KAFKA_BOOTSTRAP_SERVERS: kafka-service.default.svc.cluster.local:9092
+      ORDER_CREATED_TOPIC: order-created
+      PAYMENT_STATUS_TOPIC: payment-status
+      USER_CREATED_TOPIC: user-created
+    secret:
+      DB_PASSWORD: cGFzc3dvcmQ=
+
+postgresql:
+  enabled: true
+  name: postgresql
+  replicaCount: 1
+  image:
+    repository: postgres
+    tag: 15
+    pullPolicy: IfNotPresent
+  containerPort: 5432
+  resources:
+    limits:
+      cpu: 1
+      memory: 2Gi
+    requests:
+      cpu: 500m
+      memory: 1Gi
+  config:
+    POSTGRES_USER: order
+    POSTGRES_DB: orders
+  secret:
+    POSTGRES_PASSWORD: cGFzc3dvcmQ=
+
+zookeeper:
+  enabled: true
+  name: zookeeper
+  replicaCount: 1
+  image:
+    repository: confluentinc/cp-zookeeper
+    tag: 7.5.0
+    pullPolicy: IfNotPresent
+  containerPort: 2181
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  config:
+    ZOOKEEPER_CLIENT_PORT: "2181"
+    ZOOKEEPER_TICK_TIME: "2000"
+
+kafka:
+  enabled: true
+  name: kafka
+  replicaCount: 1
+  image:
+    repository: confluentinc/cp-kafka
+    tag: 7.5.0
+    pullPolicy: IfNotPresent
+  containerPort: 9092
+  resources:
+    limits:
+      cpu: 1
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  config:
+    KAFKA_BROKER_ID: "1"
+    KAFKA_ZOOKEEPER_CONNECT: zookeeper-service:2181
+    KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-service:9092
+    KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+    KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+    KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: "1"
+    KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1"
+
+ingress:
+  enabled: true
+  className: nginx
+  host: arch.homework
+  annotations: {}
+  paths:
+    - service: notification
+      path: /notification
+      pathType: Prefix
+    - service: order
+      path: /order
+      pathType: Prefix
+    - service: billing
+      path: /billing
+      pathType: Prefix
+

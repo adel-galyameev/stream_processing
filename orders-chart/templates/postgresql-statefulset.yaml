@@ -1,0 +1,34 @@
+{{- if .Values.postgresql.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.postgresql.name }}
+  labels:
+    {{- include "postgresql.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.postgresql.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.postgresql.name }}
+  serviceName: {{ .Values.postgresql.name }}-service
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.postgresql.name }}
+    spec:
+      containers:
+        - name: {{ .Values.postgresql.name }}
+          image: "{{ .Values.postgresql.image.repository }}:{{ .Values.postgresql.image.tag }}"
+          imagePullPolicy: {{ .Values.postgresql.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.postgresql.containerPort }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.postgresql.name }}-config
+            - secretRef:
+                name: {{ .Values.postgresql.name }}-secret
+          {{- with .Values.postgresql.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+{{- end }}

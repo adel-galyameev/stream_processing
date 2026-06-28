@@ -7,7 +7,7 @@ info:
     name: 'Галямеев Адель'
     email: 'adelbabai37@gmail.com'
 servers: 
-  - uri: 'http://arch.homework'
+  - url: 'http://arch.homework'
     description: 'arch.homework'
 paths:
   /notification/profile:
@@ -31,6 +31,7 @@ paths:
           name: user_id
           schema:
             type: string
+            format: uuid
           required: true
           example: 'f42863b4-19c2-4597-ab68-a355ab8bb41c'
       responses:
@@ -54,6 +55,7 @@ components:
       properties:
         userId:
           type: string
+          format: uuid
           example: 'f42863b4-19c2-4597-ab68-a355ab8bb41c'
           description: 'уникальный иденцификатор пользователя'
         userName:
@@ -68,23 +70,29 @@ components:
     NotificationRs:
      type: object
      required:
+      - userId
       - message
       - type
       - status
      properties:
-      message:
-        type: string
-        example: 'Заказ 123 оплачен!'
-        description: 'сообщение для пользователя'
-      type:
-        type: string
-        enum:
+       userId:
+         type: string
+         format: uuid
+         example: 'f42863b4-19c2-4597-ab68-a355ab8bb41c'
+         description: 'уникальный иденцификатор пользователя'
+       message:
+         type: string
+         example: 'Заказ 123 оплачен!'
+         description: 'сообщение для пользователя'
+       type:
+         type: string
+         enum:
           - INFO
           - ERROR
-        description: 'тип сообщения'
-      status:
-        type: string
-        enum:
+         description: 'тип сообщения'
+       status:
+         type: string
+         enum:
           - SENT
           - NOT_SENT
-        description: 'статус нотификации'
+         description: 'статус нотификации'

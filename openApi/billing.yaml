@@ -8,7 +8,7 @@ info:
     name: 'Галямеев Адель'
     email: 'adelbabai37@gmail.com'
 servers: 
-  - uri: 'http://arch.homework'
+  - url: 'http://arch.homework'
     description: 'arch.homework'
 paths: 
   /billing/user:
@@ -37,6 +37,7 @@ paths:
           name: user_id
           schema: 
             type: string
+            format: uuid
           required: true
           example: 'f42863b4-19c2-4597-ab68-a355ab8bb41c'
       requestBody:
@@ -62,6 +63,7 @@ paths:
           name: user_id
           schema:
             type: string
+            format: uuid
           required: true
           example: 'f42863b4-19c2-4597-ab68-a355ab8bb41c'
       responses:
@@ -80,6 +82,7 @@ paths:
           name: user_id
           schema:
             type: string
+            format: uuid
           required: true
           example: 'f42863b4-19c2-4597-ab68-a355ab8bb41c'
       requestBody:
@@ -127,9 +130,11 @@ components:
         - userName
         - email
         - phone
+        - accountNumber
       properties:
         id:
           type: string
+          format: uuid
           example: 'f42863b4-19c2-4597-ab68-a355ab8bb41c'
           description: 'уникальный иденцификатор пользователя'
         userName: 
@@ -145,6 +150,10 @@ components:
           type: string
           example: '+79507770377'
           description: 'номер телефона'
+        accountNumber:
+          type: string
+          example: 'ACC-a1b2c3d4-e5f6-7890-abcd-ef1234567890'
+          description: 'номер счета'
     AccountRq:
       type: object
       required: 

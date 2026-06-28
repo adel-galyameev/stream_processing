@@ -7,7 +7,7 @@ info:
     name: 'Галямеев Адель'
     email: 'adelbabai37@gmail.com'
 servers: 
-  - uri: 'http://arch.homework'
+  - url: 'http://arch.homework'
     description: 'arch.homework'
 paths:
   /order/{user_id}:
@@ -18,6 +18,7 @@ paths:
           name: user_id
           schema:
             type: string
+            format: uuid
           required: true
           example: 'f42863b4-19c2-4597-ab68-a355ab8bb41c'
       requestBody:
@@ -59,6 +60,8 @@ components:
         - price
         - product
         - number
+        - status
+        - created_at
       properties: 
         price: 
           type: integer
@@ -69,8 +72,22 @@ components:
           example: 'Молоко'
           description: 'Название продукта'
         number:
-          type: integer
-          example: 1
-          description: 'Номер заказа'
+          type: string
+          format: uuid
+          example: 'f42863b4-19c2-4597-ab68-a355ab8bb41c'
+          description: 'Идентификатор заказа'
+        status:
+          type: string
+          enum:
+            - CREATED
+            - PAID
+            - ERROR
+          example: CREATED
+          description: 'Статус заказа'
+        created_at:
+          type: string
+          format: date-time
+          example: '2026-06-21T12:00:00Z'
+          description: 'Дата и время создания заказа'
 
 

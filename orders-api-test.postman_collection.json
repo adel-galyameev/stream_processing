@@ -1,0 +1,1184 @@
+{
+	"info": {
+		"_postman_id": "991c0e5f-c7dd-4828-96e9-340cd99f0bf7",
+		"name": "orders-api-test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25339338",
+		"_collection_link": "https://sbbol0.postman.co/workspace/sbbol~27cd9015-f91c-4308-8b6b-e8c558b29306/collection/25339338-991c0e5f-c7dd-4828-96e9-340cd99f0bf7?action=share&source=collection_link&creator=25339338"
+	},
+	"item": [
+		{
+			"name": "1) Создание пользователя",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"function randomString(len) {",
+							"  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';",
+							"  let result = '';",
+							"  for (let i = 0; i < len; i++) result += chars[Math.floor(Math.random() * chars.length)];",
+							"  return result;",
+							"}",
+							"",
+							"const r1 = randomString(8);",
+							"",
+							"pm.collectionVariables.set('user_username', 'user_' + r1);",
+							"pm.collectionVariables.set('user_email', 'user_' + r1 + '@test.com');"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+							"const body = pm.response.json();",
+							"pm.test(\"User created\", () => pm.expect(body).to.have.property('id'));",
+							"pm.collectionVariables.set('user_id', body.id);"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"userName\": \"{{user_username}}\",\n  \"email\": \"{{user_email}}\",\n  \"phone\": \"+79507770377\"\n}",
+					"options": {
+						"raw": {
+							"headerFamily": "json",
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/billing/user",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"billing",
+						"user"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "OK",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userName\": \"Tom\",\n  \"email\": \"Tom@test.ru\",\n  \"phone\": \"+79507770377\"\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/billing/user",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"billing",
+								"user"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"id\": \"f42863b4-19c2-4597-ab68-a355ab8bb41c\",\n  \"userName\": \"Tom\",\n  \"email\": \"Tom@test.ru\",\n  \"phone\": \"+79507770377\"\n}"
+				},
+				{
+					"name": "внутренняя ошибка сервиса",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userName\": \"Tom\",\n  \"email\": \"Tom@test.ru\",\n  \"phone\": \"+79507770377\"\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/billing/user",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"billing",
+								"user"
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "text",
+					"header": [],
+					"cookie": [],
+					"body": ""
+				}
+			]
+		},
+		{
+			"name": "2) Пополнение счета пользователя",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+							"const body = pm.response.json();",
+							"const sum = body.sum",
+							"const totalSum = body.totalSum",
+							"pm.test(\"sum равно totalSum\", function () {",
+							"    pm.expect(sum).to.eql(totalSum);",
+							"});",
+							"pm.collectionVariables.set('totalSum', totalSum);"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"sum\": 10000\n}",
+					"options": {
+						"raw": {
+							"headerFamily": "json",
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/billing/user/{{user_id}}/account",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"billing",
+						"user",
+						"{{user_id}}",
+						"account"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "OK",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sum\": 1000\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/billing/user/:user_id/account",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"billing",
+								"user",
+								":user_id",
+								"account"
+							],
+							"variable": [
+								{
+									"key": "user_id"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"sum\": 1000,\n  \"totalSum\": 100000,\n  \"date\": \"2026-06-16T14:30:00Z\"\n}"
+				},
+				{
+					"name": "Bad request",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sum\": 1000\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/billing/user/:user_id/account",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"billing",
+								"user",
+								":user_id",
+								"account"
+							],
+							"variable": [
+								{
+									"key": "user_id"
+								}
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "text",
+					"header": [],
+					"cookie": [],
+					"body": ""
+				},
+				{
+					"name": "внутренняя ошибка сервиса",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sum\": 1000\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/billing/user/:user_id/account",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"billing",
+								"user",
+								":user_id",
+								"account"
+							],
+							"variable": [
+								{
+									"key": "user_id"
+								}
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "text",
+					"header": [],
+					"cookie": [],
+					"body": ""
+				}
+			]
+		},
+		{
+			"name": "3) Создание заказа (успех)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+							"const status = pm.response.json().status",
+							"const price = pm.response.json().price",
+							"pm.test(\"Status is CREATED\", () => pm.expect(status).to.eql(\"CREATED\"))",
+							"pm.collectionVariables.set('price', price)"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"price\": 500,\n  \"product\": \"Молоко\"\n}",
+					"options": {
+						"raw": {
+							"headerFamily": "json",
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/order/{{user_id}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"order",
+						"{{user_id}}"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "OK",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"price\": 100,\n  \"product\": \"Молоко\"\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/order/:user_id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"order",
+								":user_id"
+							],
+							"variable": [
+								{
+									"key": "user_id"
+								}
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"price\": 100,\n  \"product\": \"Молоко\",\n  \"number\": 1\n}"
+				},
+				{
+					"name": "Недостаточно средств",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"price\": 100,\n  \"product\": \"Молоко\"\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/order/:user_id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"order",
+								":user_id"
+							],
+							"variable": [
+								{
+									"key": "user_id"
+								}
+							]
+						}
+					},
+					"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+					"code": 422,
+					"_postman_previewlanguage": "text",
+					"header": [],
+					"cookie": [],
+					"body": ""
+				},
+				{
+					"name": "внутренняя ошибка сервиса",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"price\": 100,\n  \"product\": \"Молоко\"\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/order/:user_id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"order",
+								":user_id"
+							],
+							"variable": [
+								{
+									"key": "user_id"
+								}
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "text",
+					"header": [],
+					"cookie": [],
+					"body": ""
+				}
+			]
+		},
+		{
+			"name": "4) Проверить баланс (должна списаться стоимость)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status 200\", () => pm.response.to.have.status(200))",
+							"const res = pm.response.json();",
+							"const totalSum = Number(pm.collectionVariables.get(\"totalSum\"))",
+							"const price = Number(pm.collectionVariables.get(\"price\"))",
+							"",
+							"pm.test(",
+							"    `balance ${res.balance}, равен totalSum ${totalSum} - price ${price}`,",
+							"    function () {",
+							"        pm.expect(res.balance).to.eql(totalSum - price);",
+							"    }",
+							");",
+							"",
+							"pm.collectionVariables.set('balance', res.balance)"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/billing/user/{{user_id}}/account",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"billing",
+						"user",
+						"{{user_id}}",
+						"account"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "OK",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/billing/user/:user_id/account",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"billing",
+								"user",
+								":user_id",
+								"account"
+							],
+							"variable": [
+								{
+									"key": "user_id"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"balance\": 1000\n}"
+				}
+			]
+		},
+		{
+			"name": "5) Получить список нотификаций (успешная оплата)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status 200\", () => pm.response.to.have.status(200))",
+							"",
+							"const res = pm.response.json()",
+							"const first = res[0]",
+							"",
+							"pm.test(\"Нотификация о успешной оплате отправлена\", function () {",
+							"    pm.expect(first.message).to.include(\"Оплата заказа\")",
+							"    pm.expect(first.message).to.include(\"прошла успешно\")",
+							"    pm.expect(first.type).to.eql(\"INFO\")",
+							"    pm.expect(first.status).to.eql(\"SENT\")",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/notification/{{user_id}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"notification",
+						"{{user_id}}"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "OK",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/notification/:user_id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"notification",
+								":user_id"
+							],
+							"variable": [
+								{
+									"key": "user_id"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "[\n  {\n    \"userId\": \"f42863b4-19c2-4597-ab68-a355ab8bb41c\",\n    \"message\": \"Заказ 123 оплачен!\",\n    \"type\": \"INFO\",\n    \"status\": \"SENT\"\n  },\n  {\n    \"userId\": \"f42863b4-19c2-4597-ab68-a355ab8bb41c\",\n    \"message\": \"Заказ 123 оплачен!\",\n    \"type\": \"ERROR\",\n    \"status\": \"NOT_SENT\"\n  }\n]"
+				}
+			]
+		},
+		{
+			"name": "6) Создание заказа (недостаточно средств)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+							"const status = pm.response.json().status",
+							"const price = pm.response.json().price",
+							"pm.test(\"Status is CREATED\", () => pm.expect(status).to.eql(\"CREATED\"))"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"price\": 500000,\n  \"product\": \"Молоко\"\n}",
+					"options": {
+						"raw": {
+							"headerFamily": "json",
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/order/{{user_id}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"order",
+						"{{user_id}}"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "OK",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"price\": 100,\n  \"product\": \"Молоко\"\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/order/:user_id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"order",
+								":user_id"
+							],
+							"variable": [
+								{
+									"key": "user_id"
+								}
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"price\": 100,\n  \"product\": \"Молоко\",\n  \"number\": 1\n}"
+				},
+				{
+					"name": "Недостаточно средств",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"price\": 100,\n  \"product\": \"Молоко\"\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/order/:user_id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"order",
+								":user_id"
+							],
+							"variable": [
+								{
+									"key": "user_id"
+								}
+							]
+						}
+					},
+					"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+					"code": 422,
+					"_postman_previewlanguage": "text",
+					"header": [],
+					"cookie": [],
+					"body": ""
+				},
+				{
+					"name": "внутренняя ошибка сервиса",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"price\": 100,\n  \"product\": \"Молоко\"\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/order/:user_id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"order",
+								":user_id"
+							],
+							"variable": [
+								{
+									"key": "user_id"
+								}
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "text",
+					"header": [],
+					"cookie": [],
+					"body": ""
+				}
+			]
+		},
+		{
+			"name": "7) Проверить баланс (не должен изменится)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status 200\", () => pm.response.to.have.status(200))",
+							"const res = pm.response.json();",
+							"const beforeBalance = Number(pm.collectionVariables.get(\"balance\"))",
+							"",
+							"pm.test(",
+							"    `balance ${res.balance}, равен значению после первого удачного списания ${beforeBalance}`,",
+							"    function () {",
+							"        pm.expect(res.balance).to.eql(beforeBalance);",
+							"    }",
+							");"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/billing/user/{{user_id}}/account",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"billing",
+						"user",
+						"{{user_id}}",
+						"account"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "OK",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/billing/user/:user_id/account",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"billing",
+								"user",
+								":user_id",
+								"account"
+							],
+							"variable": [
+								{
+									"key": "user_id"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"balance\": 1000\n}"
+				}
+			]
+		},
+		{
+			"name": "8) Получить список нотификаций (не успешная оплата)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status 200\", () => pm.response.to.have.status(200))",
+							"",
+							"const res = pm.response.json()",
+							"const first = res[0]",
+							"",
+							"pm.test(\"Нотификация о не успешной оплате отправлена\", function () {",
+							"    pm.expect(first.message).to.include(\"Оплата заказа\")",
+							"    pm.expect(first.message).to.include(\"не прошла: Недостаточно средств\")",
+							"    pm.expect(first.type).to.eql(\"ERROR\")",
+							"    pm.expect(first.status).to.eql(\"SENT\")",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/notification/{{user_id}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"notification",
+						"{{user_id}}"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "OK",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/notification/:user_id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"notification",
+								":user_id"
+							],
+							"variable": [
+								{
+									"key": "user_id"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "[\n  {\n    \"userId\": \"f42863b4-19c2-4597-ab68-a355ab8bb41c\",\n    \"message\": \"Заказ 123 оплачен!\",\n    \"type\": \"INFO\",\n    \"status\": \"SENT\"\n  },\n  {\n    \"userId\": \"f42863b4-19c2-4597-ab68-a355ab8bb41c\",\n    \"message\": \"Заказ 123 оплачен!\",\n    \"type\": \"ERROR\",\n    \"status\": \"NOT_SENT\"\n  }\n]"
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": ""
+		},
+		{
+			"key": "user_username",
+			"value": ""
+		},
+		{
+			"key": "user_email",
+			"value": ""
+		},
+		{
+			"key": "user_id",
+			"value": ""
+		},
+		{
+			"key": "totalSum",
+			"value": ""
+		},
+		{
+			"key": "price",
+			"value": ""
+		},
+		{
+			"key": "balance",
+			"value": ""
+		}
+	]
+}
